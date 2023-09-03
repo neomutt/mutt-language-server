@@ -6,21 +6,8 @@ import re
 from gzip import decompress
 
 from markdown_it import MarkdownIt
-from markdown_it.token import Token
 from platformdirs import site_data_dir
 from pypandoc import convert_text
-
-
-def get_content(tokens: list[Token]) -> str:
-    r"""Get content.
-
-    :param tokens:
-    :type tokens: list[Token]
-    :rtype: str
-    """
-    return "\n".join(
-        [token.content.replace("\n", " ") for token in tokens if token.content]
-    )
 
 
 def init_document() -> dict[str, str]:
@@ -54,7 +41,7 @@ def init_document() -> dict[str, str]:
     items = {}
     for i, index in enumerate(indices):
         keywords = [
-            line.split()[0].strip("**")
+            line.split()[0].strip("*")
             for line in tokens[index].content.splitlines()
         ]
         for keyword in keywords:
@@ -85,7 +72,7 @@ def init_document() -> dict[str, str]:
         ):
             indices += [i]
     for i, index in enumerate(indices):
-        keyword = tokens[index].content.strip("**")
+        keyword = tokens[index].content.strip("*")
         items[keyword] = ""
         if len(indices) - 1 == i:
             index2 = end_index
