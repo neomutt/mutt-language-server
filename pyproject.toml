@@ -62,6 +62,9 @@ mutt_language_server = ["py.typed", "assets/**"]
 file = "requirements.txt"
 
 # begin: scripts/update-pyproject.toml.pl
+[tool.setuptools.dynamic.optional-dependencies.cache]
+file = "requirements/cache.txt"
+
 [tool.setuptools.dynamic.optional-dependencies.dev]
 file = "requirements/dev.txt"
 # end: scripts/update-pyproject.toml.pl

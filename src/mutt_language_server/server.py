@@ -76,7 +76,6 @@ class MuttLanguageServer(LanguageServer):
         """
         super().__init__(*args)
         self.document = {}
-        self.packages = {}
 
         @self.feature(INITIALIZE)
         def initialize(params: InitializeParams) -> None:

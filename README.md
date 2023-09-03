@@ -42,9 +42,9 @@ A language server for (neo)mutt's muttrc.
 - [x] document hover
 - [x] completion
 
-![Document hover](https://github.com/Freed-Wu/mutt-language-server/assets/32936898/80f19981-17e6-47a1-86a7-f29f8f3f99ab)
+![Document hover](https://github.com/Freed-Wu/mutt-language-server/assets/32936898/e8da8c8b-62e6-403a-b8d2-ef5dee29a480)
 
-![Completion](https://github.com/Freed-Wu/mutt-language-server/assets/32936898/b604d659-4c97-4b3c-887f-7530fcb53a46)
+![Completion](https://github.com/Freed-Wu/mutt-language-server/assets/32936898/7bfe3145-775d-4767-8d0e-e7b082e39d2e)
 
 See
 [![readthedocs](https://shields.io/readthedocs/mutt-language-server)](https://mutt-language-server.readthedocs.io)
