@@ -43,9 +43,9 @@ text = "GPL v3"
 
 [project.urls]
 Homepage = "https://mutt-language-server.readthedocs.io"
-Download = "https://github.com/Freed-Wu/mutt-language-server/releases"
-"Bug Report" = "https://github.com/Freed-Wu/mutt-language-server/issues"
-Source = "https://github.com/Freed-Wu/mutt-language-server"
+Download = "https://github.com/neomutt/mutt-language-server/releases"
+"Bug Report" = "https://github.com/neomutt/mutt-language-server/issues"
+Source = "https://github.com/neomutt/mutt-language-server"
 
 [project.scripts]
 mutt-language-server = "mutt_language_server.__main__:main"
