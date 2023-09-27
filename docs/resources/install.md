@@ -35,13 +35,13 @@ yay -S mutt-language-server
 ## [Nix](https://nixos.org)
 
 ```sh
-nix shell github:Freed-Wu/mutt-language-server
+nix shell github:neomutt/mutt-language-server
 ```
 
 Run without installation:
 
 ```sh
-nix run github:Freed-Wu/mutt-language-server -- --help
+nix run github:neomutt/mutt-language-server -- --help
 ```
 
 ## [PYPI](https://pypi.org/project/mutt-language-server)
