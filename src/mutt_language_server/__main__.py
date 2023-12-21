@@ -31,13 +31,41 @@ def get_parser():
 
         shtab.add_argument_to(parser)
     parser.add_argument("--version", version=VERSION, action="version")
+    parser.add_argument(
+        "--generate-schema",
+        choices=["neomuttrc"],  # type: ignore
+        help="generate schema in an output format",
+    )
+    parser.add_argument(
+        "--indent",
+        type=int,
+        default=2,
+        help="generated json's indent",
+    )
+    parser.add_argument(
+        "--output-format",
+        choices=["json", "yaml", "toml"],
+        default="json",
+        help="output format: %(default)s",
+    )
     return parser
 
 
 def main():
     r"""Parse arguments and provide shell completions."""
-    parser = get_parser()
-    parser.parse_args()
+    args = get_parser().parse_args()
+
+    if args.generate_schema:
+        from tree_sitter_lsp.utils import pprint
+
+        if args.generate_schema:
+            from .misc import get_schema
+
+            pprint(
+                get_schema(),
+                filetype=args.output_format,
+                indent=args.indent,
+            )
 
     from .server import MuttLanguageServer
 

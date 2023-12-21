@@ -1,9 +1,5 @@
 [build-system]
-requires = [
-  "setuptools_scm[toml] >= 6.2",
-  "setuptools-generate >= 0.0.6",
-  "platformdirs",
-]
+requires = ["setuptools_scm[toml] >= 6.2", "setuptools-generate >= 0.0.6"]
 build-backend = "setuptools.build_meta"
 
 # https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html
@@ -62,12 +58,12 @@ mutt_language_server = ["py.typed", "assets/**"]
 file = "requirements.txt"
 
 # begin: scripts/update-pyproject.toml.pl
-[tool.setuptools.dynamic.optional-dependencies.cache]
-file = "requirements/cache.txt"
-
 [tool.setuptools.dynamic.optional-dependencies.dev]
 file = "requirements/dev.txt"
 # end: scripts/update-pyproject.toml.pl
+
+[tool.setuptools.dynamic.optional-dependencies.misc]
+file = "requirements/misc.txt"
 
 [tool.setuptools_scm]
 write_to = "src/mutt_language_server/_version.py"
