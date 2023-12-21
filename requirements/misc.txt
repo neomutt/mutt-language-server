@@ -1,4 +1,3 @@
 #!/usr/bin/env -S pip install -r
 
-markdown-it-py
-pypandoc
+tree-sitter-lsp[misc]

@@ -1,29 +1,18 @@
-r"""Api
-=======
+r"""Misc
+========
 """
-import os
 import re
-from gzip import decompress
+from typing import Any
 
-from markdown_it import MarkdownIt
-from platformdirs import site_data_dir
-from pypandoc import convert_text
+from tree_sitter_lsp.misc import get_md_tokens
 
 
-def init_document() -> dict[str, str]:
-    r"""Init document.
+def get_schema() -> dict[str, Any]:
+    r"""Get schema.
 
-    :rtype: dict[str, str]
+    :rtype: dict[str, Any]
     """
-    with open(
-        os.path.join(
-            os.path.join(site_data_dir("man"), "man5"), "neomuttrc.5.gz"
-        ),
-        "rb",
-    ) as f:
-        text = decompress(f.read()).decode()
-    md = MarkdownIt("commonmark", {})
-    tokens = md.parse(convert_text(text, "markdown", "man"))
+    tokens = get_md_tokens("neomuttrc")
     indices = []
     end_index = len(tokens)
     for i, token in enumerate(tokens):
