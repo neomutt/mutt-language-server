@@ -98,16 +98,14 @@ class MuttLanguageServer(LanguageServer):
                 params.text_document.uri, params.position, False
             )
             properties = get_schema().get("properties", {})
+            kind = CompletionItemKind.Function
             if _range.start.character != 0:
                 properties = properties.get("set", {}).get("properties", {})
+                kind = CompletionItemKind.Constant
             items = [
                 CompletionItem(
                     x,
-                    kind=(
-                        CompletionItemKind.Constant
-                        if property.get("description", "").startswith("Type:")
-                        else CompletionItemKind.Function
-                    ),
+                    kind=kind,
                     documentation=MarkupContent(
                         MarkupKind.Markdown, property.get("description", "")
                     ),
