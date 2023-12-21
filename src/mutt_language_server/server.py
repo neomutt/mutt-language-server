@@ -28,7 +28,7 @@ from lsprotocol.types import (
 from platformdirs import user_cache_dir
 from pygls.server import LanguageServer
 
-PAT = re.compile(r"(?<=\bsource\b\s)\w+")
+PAT = re.compile(r"(?<=\bsource\b\s)\S+")
 
 
 def get_document(
@@ -106,12 +106,12 @@ class MuttLanguageServer(LanguageServer):
             links = []
             for i, line in enumerate(document.source.splitlines()):
                 for m in PAT.finditer(line):
-                    url = os.path.join(
-                        os.path.dirname(params.text_document.uri),
-                        m.groups()[0],
-                    )
                     _range = Range(
                         Position(i, m.start()), Position(i, m.end())
+                    )
+                    url = os.path.join(
+                        os.path.dirname(params.text_document.uri),
+                        os.path.expanduser(line[m.start() : m.end()]),
                     )
                     links += [DocumentLink(_range, url)]
             return links
