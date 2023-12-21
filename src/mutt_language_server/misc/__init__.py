@@ -46,7 +46,12 @@ def get_schema() -> dict[str, Any]:
             for line in tokens[index].content.splitlines()
         ]
         for keyword in keywords:
-            schema["properties"][keyword] = {"description": ""}
+            schema["properties"][keyword] = {
+                "description": f"""```neomuttrc
+{tokens[index].content.strip()}
+```
+"""
+            }
         if len(indices) - 1 == i:
             index2 = end_index
         else:
@@ -56,13 +61,7 @@ def get_schema() -> dict[str, Any]:
                 for keyword in keywords:
                     schema["properties"][keyword][
                         "description"
-                    ] += token.content
-        for keyword in keywords:
-            schema["properties"][keyword]["description"] = tokens[
-                index
-            ].content + re.sub(
-                r"\n\s*", " ", schema["properties"][keyword]["description"]
-            )
+                    ] += token.content.replace("\n", " ")
 
     schema["properties"]["set"]["properties"] = {}
     schema["properties"]["set"]["patternProperties"] = {r"my_\w+": {}}
