@@ -39,9 +39,10 @@
 
 A language server for (neo)mutt's muttrc.
 
-- [x] document hover
-- [x] completion
-- [ ] diagnostic
+- [ ] [Diagnostic](https://microsoft.github.io/language-server-protocol/specifications/specification-current#diagnostic):
+- [x] [Document Link](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_documentLink):
+- [x] [Hover](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_hover)
+- [x] [Completion](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_completion)
 
 A screencast authored by @rbmarliere:
 
