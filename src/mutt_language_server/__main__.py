@@ -51,7 +51,7 @@ def get_parser():
     return parser
 
 
-def main():
+def main() -> None:
     r"""Parse arguments and provide shell completions."""
     args = get_parser().parse_args()
 
@@ -66,6 +66,7 @@ def main():
                 filetype=args.output_format,
                 indent=args.indent,
             )
+            return None
 
     from .server import MuttLanguageServer
 
