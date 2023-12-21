@@ -9,11 +9,14 @@ from typing import Any, Literal, Tuple
 from lsprotocol.types import (
     INITIALIZE,
     TEXT_DOCUMENT_COMPLETION,
+    TEXT_DOCUMENT_DOCUMENT_LINK,
     TEXT_DOCUMENT_HOVER,
     CompletionItem,
     CompletionItemKind,
     CompletionList,
     CompletionParams,
+    DocumentLink,
+    DocumentLinkParams,
     Hover,
     InitializeParams,
     MarkupContent,
@@ -24,6 +27,8 @@ from lsprotocol.types import (
 )
 from platformdirs import user_cache_dir
 from pygls.server import LanguageServer
+
+PAT = re.compile(r"(?<=\bsource\b\s)\w+")
 
 
 def get_document(
@@ -88,6 +93,28 @@ class MuttLanguageServer(LanguageServer):
             opts = params.initialization_options
             method = getattr(opts, "method", "builtin")
             self.document = get_document(method)  # type: ignore
+
+        @self.feature(TEXT_DOCUMENT_DOCUMENT_LINK)
+        def document_link(params: DocumentLinkParams) -> list[DocumentLink]:
+            r"""Get document links.
+
+            :param params:
+            :type params: DocumentLinkParams
+            :rtype: list[DocumentLink]
+            """
+            document = self.workspace.get_document(params.text_document.uri)
+            links = []
+            for i, line in enumerate(document.source.splitlines()):
+                for m in PAT.finditer(line):
+                    url = os.path.join(
+                        os.path.dirname(params.text_document.uri),
+                        m.groups()[0],
+                    )
+                    _range = Range(
+                        Position(i, m.start()), Position(i, m.end())
+                    )
+                    links += [DocumentLink(_range, url)]
+            return links
 
         @self.feature(TEXT_DOCUMENT_HOVER)
         def hover(params: TextDocumentPositionParams) -> Hover | None:
