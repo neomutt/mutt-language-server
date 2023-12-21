@@ -76,10 +76,15 @@ class MuttLanguageServer(LanguageServer):
             word, _range = self._cursor_word(
                 params.text_document.uri, params.position, True
             )
-            result = get_schema().get(word)
-            if not result:
+            properties = get_schema().get("properties", {})
+            if _range.start.character != 0:
+                properties = properties.get("set", {}).get("properties", {})
+            description = properties.get(word, {}).get("description", {})
+            if not description:
                 return None
-            return Hover(MarkupContent(MarkupKind.Markdown, result), _range)
+            return Hover(
+                MarkupContent(MarkupKind.Markdown, description), _range
+            )
 
         @self.feature(TEXT_DOCUMENT_COMPLETION)
         def completions(params: CompletionParams) -> CompletionList:
@@ -89,21 +94,26 @@ class MuttLanguageServer(LanguageServer):
             :type params: CompletionParams
             :rtype: CompletionList
             """
-            word, _ = self._cursor_word(
+            word, _range = self._cursor_word(
                 params.text_document.uri, params.position, False
             )
+            properties = get_schema().get("properties", {})
+            if _range.start.character != 0:
+                properties = properties.get("set", {}).get("properties", {})
             items = [
                 CompletionItem(
                     x,
                     kind=(
                         CompletionItemKind.Constant
-                        if doc.startswith("Type:")
+                        if property.get("description", "").startswith("Type:")
                         else CompletionItemKind.Function
                     ),
-                    documentation=MarkupContent(MarkupKind.Markdown, doc),
+                    documentation=MarkupContent(
+                        MarkupKind.Markdown, property.get("description", "")
+                    ),
                     insert_text=x,
                 )
-                for x, doc in get_schema().items()
+                for x, property in properties.items()
                 if x.startswith(word)
             ]
             return CompletionList(False, items)
