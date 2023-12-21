@@ -65,6 +65,7 @@ def get_schema() -> dict[str, Any]:
             )
 
     schema["properties"]["set"]["properties"] = {}
+    schema["properties"]["set"]["patternProperties"] = {r"my_\w+": {}}
     indices = []
     for i, token in enumerate(tokens[end_index:], end_index):
         if token.content == "SEE ALSO":
@@ -104,19 +105,22 @@ def get_schema() -> dict[str, Any]:
                     _type = lines[0].split(":")[1].strip()
                     if _type == "quadoption":
                         schema["properties"]["set"]["properties"][keyword][
-                            "type"
-                        ] = "string"
-                        schema["properties"]["set"]["properties"][keyword][
-                            "enum"
-                        ] = ["ask-yes", "yes", "ask-no", "no"]
+                            "oneOf"
+                        ] = [
+                            {
+                                "type": "string",
+                                "enum": ["ask-yes", "yes", "ask-no", "no"],
+                            },
+                            {"const": None},
+                        ]
                     elif _type == "mailbox":
                         schema["properties"]["set"]["properties"][keyword][
-                            "type"
-                        ] = "string"
+                            "oneOf"
+                        ] = [{"type": "string"}, {"const": None}]
                     else:
                         schema["properties"]["set"]["properties"][keyword][
-                            "type"
-                        ] = _type
+                            "oneOf"
+                        ] = [{"type": _type}, {"const": None}]
                     default = lines[1].split(":")[1].strip()
                     if _type == "boolean":
                         default = default == "yes"
@@ -134,5 +138,4 @@ def get_schema() -> dict[str, Any]:
                     schema["properties"]["set"]["properties"][keyword][
                         "description"
                     ] += "\n" + re.sub(r"\n\s*", " ", token.content)
-
     return schema
