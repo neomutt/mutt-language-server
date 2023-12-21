@@ -79,6 +79,8 @@ def get_schema() -> dict[str, Any]:
             indices += [i]
     for i, index in enumerate(indices):
         keyword = tokens[index].content.strip("*")
+        if keyword.find("=") != -1:
+            continue
         schema["properties"]["set"]["properties"][keyword] = {
             "description": ""
         }
@@ -98,6 +100,33 @@ def get_schema() -> dict[str, Any]:
                     ]
                     == ""
                 ):
+                    lines = token.content.splitlines()
+                    _type = lines[0].split(":")[1].strip()
+                    if _type == "quadoption":
+                        schema["properties"]["set"]["properties"][keyword][
+                            "type"
+                        ] = "string"
+                        schema["properties"]["set"]["properties"][keyword][
+                            "enum"
+                        ] = ["ask-yes", "yes", "ask-no", "no"]
+                    elif _type == "mailbox":
+                        schema["properties"]["set"]["properties"][keyword][
+                            "type"
+                        ] = "string"
+                    else:
+                        schema["properties"]["set"]["properties"][keyword][
+                            "type"
+                        ] = _type
+                    default = lines[1].split(":")[1].strip()
+                    if _type == "boolean":
+                        default = default == "yes"
+                    elif _type == "number":
+                        default = int(default)
+                    else:
+                        default = default.strip('"')
+                    schema["properties"]["set"]["properties"][keyword][
+                        "default"
+                    ] = default
                     schema["properties"]["set"]["properties"][keyword][
                         "description"
                     ] = token.content
