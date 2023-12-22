@@ -79,7 +79,7 @@ class MuttLanguageServer(LanguageServer):
             properties = get_schema().get("properties", {})
             if _range.start.character != 0:
                 properties = properties.get("set", {}).get("properties", {})
-            description = properties.get(word, {}).get("description", {})
+            description = properties.get(word, {}).get("description", "")
             if not description:
                 return None
             return Hover(
