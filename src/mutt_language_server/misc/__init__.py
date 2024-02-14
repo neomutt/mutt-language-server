@@ -101,27 +101,39 @@ def get_schema() -> dict[str, Any]:
                     lines = token.content.splitlines()
                     _type = lines[0].split(":")[1].strip()
                     if _type == "quadoption":
-                        schema["properties"]["set"]["properties"][keyword][
-                            "oneOf"
-                        ] = [
-                            {
-                                "type": "string",
-                                "enum": ["ask-yes", "yes", "ask-no", "no"],
-                            },
-                            {"const": None},
-                        ]
-                    elif _type == "mailbox":
-                        schema["properties"]["set"]["properties"][keyword][
-                            "oneOf"
-                        ] = [{"type": "string"}, {"const": None}]
+                        schema["properties"]["set"]["properties"][keyword] = {
+                            "type": "string",
+                            "enum": ["ask-yes", "yes", "ask-no", "no"],
+                        }
+                    elif _type == "boolean":
+                        schema["properties"]["set"]["properties"][keyword] = {
+                            "type": "string",
+                            "enum": ["yes", "no"],
+                        }
+                    # number (long)
+                    elif _type.split()[0] == "number":
+                        schema["properties"]["set"]["properties"][keyword] = {
+                            "type": _type
+                        }
+                    # mailbox, path, command
                     else:
-                        schema["properties"]["set"]["properties"][keyword][
-                            "oneOf"
-                        ] = [{"type": _type}, {"const": None}]
+                        schema["properties"]["set"]["properties"][keyword] = {
+                            "type": "string"
+                        }
+                        if _type == "regular expression":
+                            schema["properties"]["set"]["properties"][keyword][
+                                "format"
+                            ] = "regex"
+                        elif _type == "e-mail address":
+                            schema["properties"]["set"]["properties"][keyword][
+                                "format"
+                            ] = "email"
+                        elif _type == "enumeration":
+                            schema["properties"]["set"]["properties"][keyword][
+                                "enum"
+                            ] = []
                     default = lines[1].split(":")[1].strip()
-                    if _type == "boolean":
-                        default = default == "yes"
-                    elif _type == "number":
+                    if _type == "number":
                         default = int(default)
                     else:
                         default = default.strip('"')
@@ -132,7 +144,31 @@ def get_schema() -> dict[str, Any]:
                         "description"
                     ] = token.content
                 else:
+                    description = re.sub(r"\n\s*", " ", token.content)
                     schema["properties"]["set"]["properties"][keyword][
                         "description"
-                    ] += "\n" + re.sub(r"\n\s*", " ", token.content)
+                    ] += "\n" + description
+                    if (
+                        schema["properties"]["set"]["properties"][keyword].get(
+                            "enum"
+                        )
+                        == []
+                    ):
+                        enumeration = [
+                            name.strip("\\")
+                            for name in (
+                                description.split("May be ")[-1]
+                                .split(".")[0]
+                                .split('"')[1::2]
+                            )
+                        ]
+                        if enumeration:
+                            schema["properties"]["set"]["properties"][keyword][
+                                "enum"
+                            ] = enumeration
+    schema["properties"]["source"] |= {
+        "type": "array",
+        "uniqueItems": True,
+        "items": {"type": "string"},
+    }
     return schema

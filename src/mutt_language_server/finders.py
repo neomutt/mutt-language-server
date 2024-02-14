@@ -2,12 +2,14 @@ r"""Finders
 ===========
 """
 
-import os
 from dataclasses import dataclass
 
 from lsprotocol.types import DiagnosticSeverity
-from tree_sitter_lsp.finders import ErrorFinder, QueryFinder
+from tree_sitter_lsp.finders import ErrorFinder, QueryFinder, SchemaFinder
 from tree_sitter_muttrc import language
+
+from .schema import MuttTrie
+from .utils import get_query, get_schema
 
 
 @dataclass(init=False)
@@ -48,20 +50,24 @@ class ImportMuttFinder(QueryFinder):
         :param severity:
         :type severity: DiagnosticSeverity
         """
-        with open(
-            os.path.join(
-                os.path.join(
-                    os.path.join(os.path.dirname(__file__), "assets"),
-                    "queries",
-                ),
-                "import.scm",
-            )
-        ) as f:
-            text = f.read()
-        query = language.query(text)
+        query = get_query("import")
         super().__init__(query, message, severity)
+
+
+@dataclass(init=False)
+class MuttFinder(SchemaFinder):
+    r"""Muttfinder."""
+
+    def __init__(self) -> None:
+        r"""Init.
+
+        :rtype: None
+        """
+        self.validator = self.schema2validator(get_schema())
+        self.cls = MuttTrie
 
 
 DIAGNOSTICS_FINDER_CLASSES = [
     ErrorMuttFinder,
+    MuttFinder,
 ]
