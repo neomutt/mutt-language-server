@@ -23,10 +23,11 @@ from lsprotocol.types import (
     TextDocumentPositionParams,
 )
 from pygls.server import LanguageServer
+from tree_sitter_lsp.diagnose import get_diagnostics
 from tree_sitter_lsp.finders import PositionFinder
 from tree_sitter_muttrc import parser
 
-from .finders import ImportMuttFinder
+from .finders import DIAGNOSTICS_FINDER_CLASSES, ImportMuttFinder
 from .utils import get_schema
 
 
@@ -56,6 +57,13 @@ class MuttLanguageServer(LanguageServer):
             """
             document = self.workspace.get_document(params.text_document.uri)
             self.trees[document.uri] = parser.parse(document.source.encode())
+            diagnostics = get_diagnostics(
+                document.uri,
+                self.trees[document.uri],
+                DIAGNOSTICS_FINDER_CLASSES,
+                "muttrc",
+            )
+            self.publish_diagnostics(params.text_document.uri, diagnostics)
 
         @self.feature(TEXT_DOCUMENT_DOCUMENT_LINK)
         def document_link(params: DocumentLinkParams) -> list[DocumentLink]:
