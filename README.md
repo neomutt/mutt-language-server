@@ -48,6 +48,8 @@ A screencast authored by @rbmarliere:
 
 [![asciicast](https://camo.githubusercontent.com/aa2be3ad710e855b3e6b7cd55f5261ac7582f1e69c8947f4619ba4c96f8cc506/68747470733a2f2f61736369696e656d612e6f72672f612f3631303634352e737667)](https://asciinema.org/a/610645)
 
+![diagnostic](https://github.com/neomutt/mutt-language-server/assets/32936898/61c81c34-c5ae-4d66-82b2-2be5affb1162)
+
 ![document link](https://github.com/neomutt/mutt-language-server/assets/32936898/7db39120-401e-4be7-82c4-827609ab7f26)
 
 See
