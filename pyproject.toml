@@ -7,7 +7,8 @@ build-backend = "setuptools.build_meta"
 name = "mutt-language-server"
 description = "mutt language server"
 readme = "README.md"
-requires-python = ">= 3.7"
+# type_a | type_b
+requires-python = ">= 3.10"
 keywords = ["mutt", "language server"]
 classifiers = [
   "Development Status :: 3 - Alpha",
@@ -20,11 +21,9 @@ classifiers = [
   "Operating System :: MacOS",
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.7",
-  "Programming Language :: Python :: 3.8",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
@@ -58,12 +57,15 @@ mutt_language_server = ["py.typed", "assets/**"]
 file = "requirements.txt"
 
 # begin: scripts/update-pyproject.toml.pl
+[tool.setuptools.dynamic.optional-dependencies.colorize]
+file = "requirements/colorize.txt"
+
 [tool.setuptools.dynamic.optional-dependencies.dev]
 file = "requirements/dev.txt"
-# end: scripts/update-pyproject.toml.pl
 
 [tool.setuptools.dynamic.optional-dependencies.misc]
 file = "requirements/misc.txt"
+# end: scripts/update-pyproject.toml.pl
 
 [tool.setuptools_scm]
 write_to = "src/mutt_language_server/_version.py"
@@ -111,8 +113,3 @@ exclude_lines = [
   "if __name__ == .__main__.:",
   "\\s*import tomli as tomllib",
 ]
-
-[tool.cibuildwheel]
-archs = ["all"]
-before-test = "pip install pytest"
-test-command = "pytest {project}"
