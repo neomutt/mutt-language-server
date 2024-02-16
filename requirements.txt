@@ -1,5 +1,5 @@
 #!/usr/bin/env -S pip install -r
 
-# UNI.get_uri()
-tree-sitter-lsp >= 0.0.12
+# ErrorFinder
+tree-sitter-lsp >= 0.0.13
 tree-sitter-muttrc
