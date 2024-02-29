@@ -56,6 +56,10 @@ See
 [![readthedocs](https://shields.io/readthedocs/mutt-language-server)](https://mutt-language-server.readthedocs.io)
 to know more.
 
+## How Does It Work
+
+See [here](https://github.com/neomutt/lsp-tree-sitter#usage).
+
 ## Related Projects
 
 - [neomutt.vim](https://github.com/neomutt/neomutt.vim): vim filetype plugin
