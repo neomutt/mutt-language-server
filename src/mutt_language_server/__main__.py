@@ -23,7 +23,7 @@ Report bugs to <wuzhenyu@ustc.edu>.
 """
 
 
-def get_parser():
+def get_parser() -> ArgumentParser:
     r"""Get a parser for unit test."""
     parser = ArgumentParser(
         epilog=EPILOG,
@@ -88,7 +88,7 @@ def main() -> None:
                 {"indent": args.indent} if args.output_format != "toml" else {}
             )
             pprint(
-                get_schema(),
+                get_schema(args.generate_schema),
                 filetype=args.output_format,
                 **kwargs,
             )

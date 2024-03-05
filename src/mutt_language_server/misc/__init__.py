@@ -7,10 +7,11 @@ from typing import Any
 
 from lsp_tree_sitter.misc import get_md_tokens
 
+from .. import FILETYPE
 from .._metainfo import SOURCE, project
 
 
-def get_schema() -> dict[str, Any]:
+def get_schema(filetype: FILETYPE = "neomuttrc") -> dict[str, Any]:
     r"""Get schema.
 
     :rtype: dict[str, Any]
