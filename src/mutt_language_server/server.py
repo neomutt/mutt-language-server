@@ -25,10 +25,9 @@ from lsprotocol.types import (
     TextDocumentPositionParams,
 )
 from pygls.server import LanguageServer
-from tree_sitter_muttrc import parser
 
 from .finders import DIAGNOSTICS_FINDER_CLASSES, ImportMuttFinder
-from .utils import get_schema
+from .utils import get_schema, parser
 
 
 class MuttLanguageServer(LanguageServer):

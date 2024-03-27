@@ -1,4 +1,4 @@
 #!/usr/bin/env -S pip install -r
 
 lsp-tree-sitter
-tree-sitter-muttrc
+tree-sitter-muttrc >= 0.0.4
