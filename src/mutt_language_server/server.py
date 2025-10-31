@@ -55,7 +55,9 @@ class MuttLanguageServer(LanguageServer):
             :type params: DidChangeTextDocumentParams
             :rtype: None
             """
-            document = self.workspace.get_text_document(params.text_document.uri)
+            document = self.workspace.get_text_document(
+                params.text_document.uri
+            )
             self.trees[document.uri] = parser.parse(document.source.encode())
             diagnostics = get_diagnostics(
                 document.uri,
@@ -78,7 +80,9 @@ class MuttLanguageServer(LanguageServer):
             :type params: DocumentLinkParams
             :rtype: list[DocumentLink]
             """
-            document = self.workspace.get_text_document(params.text_document.uri)
+            document = self.workspace.get_text_document(
+                params.text_document.uri
+            )
             return ImportMuttFinder().get_document_links(
                 document.uri, self.trees[document.uri]
             )
@@ -91,7 +95,9 @@ class MuttLanguageServer(LanguageServer):
             :type params: TextDocumentPositionParams
             :rtype: Hover | None
             """
-            document = self.workspace.get_text_document(params.text_document.uri)
+            document = self.workspace.get_text_document(
+                params.text_document.uri
+            )
             uni = PositionFinder(params.position).find(
                 document.uri, self.trees[document.uri]
             )
@@ -120,7 +126,9 @@ class MuttLanguageServer(LanguageServer):
             :type params: CompletionParams
             :rtype: CompletionList
             """
-            document = self.workspace.get_text_document(params.text_document.uri)
+            document = self.workspace.get_text_document(
+                params.text_document.uri
+            )
             uni = PositionFinder(params.position, right_equal=True).find(
                 document.uri, self.trees[document.uri]
             )

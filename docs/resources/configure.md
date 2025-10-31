@@ -80,11 +80,11 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
 ```toml
 [[language]]
 name = "muttrc"
-language-servers = [ "mutt-language-server",]
+language-servers = ["mutt-language-server"]
 
 [[language]]
 name = "neomuttrc"
-language-servers = [ "mutt-language-server",]
+language-servers = ["mutt-language-server"]
 
 [language_server.mutt-language-server]
 command = "mutt-language-server"
@@ -98,7 +98,7 @@ command = "mutt-language-server"
 
 ```toml
 [language_server.mutt-language-server]
-filetypes = [ "muttrc", "neomuttrc",]
+filetypes = ["muttrc", "neomuttrc"]
 command = "mutt-language-server"
 ```
 
