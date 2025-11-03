@@ -32,17 +32,17 @@ class MuttTrie(Trie):
         :rtype: "Trie"
         """
         if node.type == "option":
-            text = UNI.node2text(node)
+            text = UNI(node).text
             if text.startswith("no"):
-                return cls(UNI.node2range(node), parent, "no")
+                return cls(UNI(node).range, parent, "no")
             else:
-                return cls(UNI.node2range(node), parent, "yes")
+                return cls(UNI(node).range, parent, "yes")
         if node.type == "int":
-            return cls(UNI.node2range(node), parent, int(UNI.node2text(node)))
+            return cls(UNI(node).range, parent, int(UNI(node).text))
         if node.type == "\n":
-            return cls(UNI.node2range(node), parent, "")
+            return cls(UNI(node).range, parent, "")
         if node.type in {"shell", "string", "quadoption"}:
-            return cls(UNI.node2range(node), parent, UNI.node2text(node))
+            return cls(UNI(node).range, parent, UNI(node).text)
         if node.type == "file":
             trie = cls(Range(Position(0, 0), Position(1, 0)), parent, {})
             for child in node.children:
@@ -54,7 +54,7 @@ class MuttTrie(Trie):
                 _value: dict[str, Trie] = trie.value  # type: ignore
                 if _type not in _value:
                     trie.value[_type] = cls(  # type: ignore
-                        UNI.node2range(child),
+                        UNI(child).range,
                         trie,
                         {} if _type != "source" else [],
                     )
@@ -87,13 +87,13 @@ class MuttTrie(Trie):
                                 continue
                             items += [grandchild]
                         for k, v in zip(items[::2], items[1::2], strict=False):
-                            value[UNI.node2text(k)] = cls.from_node(v, subtrie)
+                            value[UNI(k).text] = cls.from_node(v, subtrie)
                     # set option nooption invoption & option ? option
                     else:
                         for grandchild in child.children[1:]:
                             if grandchild.type in {"&", "?", " "}:
                                 continue
-                            text = UNI.node2text(grandchild)
+                            text = UNI(grandchild).text
                             if text.startswith("no"):
                                 # generate trie from option node
                                 value[text.split("no")[-1]] = cls.from_node(
