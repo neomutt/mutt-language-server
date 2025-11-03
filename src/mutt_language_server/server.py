@@ -67,8 +67,8 @@ class MuttLanguageServer(LanguageServer):
             )
             self.text_document_publish_diagnostics(
                 PublishDiagnosticsParams(
-                    uri=params.text_document.uri,
-                    diagnostics=diagnostics,
+                    params.text_document.uri,
+                    diagnostics,
                 )
             )
 
