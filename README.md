@@ -58,7 +58,7 @@ to know more.
 
 ## How Does It Work
 
-See [here](https://github.com/neomutt/lsp-tree-sitter#usage).
+See [lsp-tree-sitter](https://github.com/neomutt/lsp-tree-sitter#usage).
 
 ## Related Projects
 
