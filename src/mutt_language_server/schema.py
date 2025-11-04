@@ -110,9 +110,9 @@ class MuttTrie(Trie):
                 elif child.type == "source_directive":
                     value += [  # type: ignore
                         cls(
-                            UNI.node2range(child.children[1]),
+                            UNI(child.children[1]).range,
                             subtrie,
-                            UNI.node2text(child.children[1]),
+                            UNI(child.children[1]).text,
                         )
                     ]
             return trie
