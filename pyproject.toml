@@ -1,7 +1,7 @@
 [project]
 name = "mutt-language-server"
 version = "0.1.0"
-description = "Add your description here"
+description = "language server for (neo)muttrc"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "GPL-3.0-or-later"
