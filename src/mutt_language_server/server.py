@@ -2,171 +2,50 @@ r"""Server
 ==========
 """
 
-from typing import Any
+import os
 
-from lsp_tree_sitter.diagnose import get_diagnostics
-from lsp_tree_sitter.finders import PositionFinder
-from lsprotocol.types import (
-    TEXT_DOCUMENT_COMPLETION,
-    TEXT_DOCUMENT_DID_CHANGE,
-    TEXT_DOCUMENT_DID_OPEN,
-    TEXT_DOCUMENT_DOCUMENT_LINK,
-    TEXT_DOCUMENT_HOVER,
-    CompletionItem,
-    CompletionItemKind,
-    CompletionList,
-    CompletionParams,
-    DidChangeTextDocumentParams,
-    DocumentLink,
-    DocumentLinkParams,
-    Hover,
-    MarkupContent,
-    MarkupKind,
-    PublishDiagnosticsParams,
-    TextDocumentPositionParams,
+from lsp_tree_sitter.completer import (
+    PathCompleter,
+    SchemaCompleter,
+    ValueCompleter,
 )
-from pygls.lsp.server import LanguageServer
+from lsp_tree_sitter.linter import PathLinter, SchemaLinter
+from lsp_tree_sitter.server import TreeSitterLanguageServer
+from tree_sitter import Language, Parser
+from tree_sitter_muttrc import language as get_language_ptr
+from tree_sitter_muttrc import queries
 
-from .finders import DIAGNOSTICS_FINDER_CLASSES, ImportMuttFinder
-from .utils import get_schema, parser
 
+class MuttLanguageServer(TreeSitterLanguageServer):
+    def __init__(self, *args, **kwargs) -> None:
+        parser = Parser()
+        language = Language(get_language_ptr())
+        parser.language = language
 
-class MuttLanguageServer(LanguageServer):
-    r"""Mutt language server."""
+        assets_path = os.path.join(os.path.dirname(__file__), "assets")
+        schema_file = os.path.join(assets_path, "json", "muttrc.json")
+        code_file = os.path.join(assets_path, "jq", "main.jq")
+        schema_completer = SchemaCompleter.from_files(schema_file, code_file)
+        code_file = os.path.join(assets_path, "jq", "value.jq")
+        value_completer = ValueCompleter.from_files(schema_file, code_file)
+        path_completer = PathCompleter(
+            "path",
+            {
+                "muttrc*": "muttrc",
+                "**/muttrc*": "muttrc",
+                "neomuttrc*": "muttrc",
+                "**/neomuttrc*": "muttrc",
+            },
+        )
+        path_linter = PathLinter.from_queries(language, queries)
+        schema_linter = SchemaLinter.from_queries(
+            language, queries, schema_file
+        )
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        r"""Init.
-
-        :param args:
-        :type args: Any
-        :param kwargs:
-        :type kwargs: Any
-        :rtype: None
-        """
-        super().__init__(*args, **kwargs)
-        self.trees = {}
-
-        @self.feature(TEXT_DOCUMENT_DID_OPEN)
-        @self.feature(TEXT_DOCUMENT_DID_CHANGE)
-        def did_change(params: DidChangeTextDocumentParams) -> None:
-            r"""Did change.
-
-            :param params:
-            :type params: DidChangeTextDocumentParams
-            :rtype: None
-            """
-            document = self.workspace.get_text_document(
-                params.text_document.uri
-            )
-            self.trees[document.uri] = parser.parse(document.source.encode())
-            diagnostics = get_diagnostics(
-                document.uri,
-                self.trees[document.uri],
-                DIAGNOSTICS_FINDER_CLASSES,
-                "muttrc",
-            )
-            self.text_document_publish_diagnostics(
-                PublishDiagnosticsParams(
-                    params.text_document.uri,
-                    diagnostics,
-                )
-            )
-
-        @self.feature(TEXT_DOCUMENT_DOCUMENT_LINK)
-        def document_link(params: DocumentLinkParams) -> list[DocumentLink]:
-            r"""Get document links.
-
-            :param params:
-            :type params: DocumentLinkParams
-            :rtype: list[DocumentLink]
-            """
-            document = self.workspace.get_text_document(
-                params.text_document.uri
-            )
-            return ImportMuttFinder().get_document_links(
-                document.uri, self.trees[document.uri]
-            )
-
-        @self.feature(TEXT_DOCUMENT_HOVER)
-        def hover(params: TextDocumentPositionParams) -> Hover | None:
-            r"""Hover.
-
-            :param params:
-            :type params: TextDocumentPositionParams
-            :rtype: Hover | None
-            """
-            document = self.workspace.get_text_document(
-                params.text_document.uri
-            )
-            uni = PositionFinder(params.position).find(
-                document.uri, self.trees[document.uri]
-            )
-            if uni is None:
-                return None
-            text = uni.text
-            result = None
-            if uni.node.range.start_point[1] == 0:
-                result = get_schema()["properties"].get(text)
-            elif uni.node.type == "option":
-                result = get_schema()["properties"]["set"]["properties"].get(
-                    text
-                )
-            if result is None:
-                return None
-            return Hover(
-                MarkupContent(MarkupKind.Markdown, result["description"]),
-                uni.range,
-            )
-
-        @self.feature(TEXT_DOCUMENT_COMPLETION)
-        def completions(params: CompletionParams) -> CompletionList:
-            r"""Completions.
-
-            :param params:
-            :type params: CompletionParams
-            :rtype: CompletionList
-            """
-            document = self.workspace.get_text_document(
-                params.text_document.uri
-            )
-            uni = PositionFinder(params.position, right_equal=True).find(
-                document.uri, self.trees[document.uri]
-            )
-            if uni is None:
-                return CompletionList(False, [])
-            text = uni.text
-            if uni.node.range.start_point[1] == 0:
-                return CompletionList(
-                    False,
-                    [
-                        CompletionItem(
-                            x,
-                            kind=CompletionItemKind.Keyword,
-                            documentation=MarkupContent(
-                                MarkupKind.Markdown, property["description"]
-                            ),
-                            insert_text=x,
-                        )
-                        for x, property in get_schema()["properties"].items()
-                        if x.startswith(text)
-                    ],
-                )
-            elif uni.node.type == "option":
-                return CompletionList(
-                    False,
-                    [
-                        CompletionItem(
-                            x,
-                            kind=CompletionItemKind.Variable,
-                            documentation=MarkupContent(
-                                MarkupKind.Markdown, property["description"]
-                            ),
-                            insert_text=x,
-                        )
-                        for x, property in get_schema()["properties"]["set"][
-                            "properties"
-                        ].items()
-                        if x.startswith(text)
-                    ],
-                )
-            return CompletionList(False, [])
+        super().__init__(
+            parser,
+            (schema_linter, path_linter),
+            (schema_completer, value_completer, path_completer),
+            *args,
+            **kwargs,
+        )

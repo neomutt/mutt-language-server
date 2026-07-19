@@ -1,0 +1,161 @@
+import re
+
+from lsp_tree_sitter.misc import get_md_tokens
+
+SOURCE = "https://github.com/neomutt/mutt-language-server"
+
+filetype = "neomuttrc"
+schema = {
+    "$id": (
+        f"{SOURCE}/blob/main/src/"
+        f"termux_language_server/assets/json/{filetype}.json"
+    ),
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$comment": (
+        "Don't edit this file directly! It is generated automatically."
+    ),
+    "type": "object",
+    "properties": {},
+}
+tokens = get_md_tokens("neomuttrc")
+indices = []
+end_index = len(tokens)
+for i, token in enumerate(tokens):
+    if token.content == "PATTERNS":
+        end_index = i
+        break
+    if (
+        token.type == "code_block"
+        and token.content.islower()
+        or token.type == "inline"
+        and token.content.startswith("**")
+        and token.content.endswith("*")
+    ):
+        indices += [i]
+for i, index in enumerate(indices):
+    keywords = [
+        line.split()[0].strip("*")
+        for line in tokens[index].content.splitlines()
+    ]
+    for keyword in keywords:
+        schema["properties"][keyword] = {
+            "description": f"""```neomuttrc
+{tokens[index].content.strip()}
+```
+"""
+        }
+    index2 = end_index if len(indices) - 1 == i else indices[i + 1]
+    for token in tokens[index + 1 : index2]:
+        if token.content != "" and not token.content.startswith("<!--"):
+            for keyword in keywords:
+                schema["properties"][keyword]["description"] += (
+                    token.content.replace("\n", " ")
+                )
+
+schema["properties"]["set"]["properties"] = {}
+schema["properties"]["set"]["patternProperties"] = {r"my_\w+": {}}
+indices = []
+for i, token in enumerate(tokens[end_index:], end_index):
+    if token.content == "SEE ALSO":
+        end_index = i
+        break
+    if (
+        token.type == "inline"
+        and token.content.islower()
+        and token.content.startswith("**")
+        and token.content.endswith("**")
+    ):
+        indices += [i]
+for i, index in enumerate(indices):
+    keyword = tokens[index].content.strip("*")
+    if keyword.find("=") != -1:
+        continue
+    schema["properties"]["set"]["properties"][keyword] = {"description": ""}
+    index2 = end_index if len(indices) - 1 == i else indices[i + 1]
+    for token in tokens[index + 1 : index2]:
+        if (
+            token.content != ""
+            and not token.content.startswith("<!--")
+            and token.content != ":"
+        ):
+            if (
+                schema["properties"]["set"]["properties"][keyword][
+                    "description"
+                ]
+                == ""
+            ):
+                lines = token.content.splitlines()
+                _type = lines[0].split(":")[1].strip()
+                if _type == "quadoption":
+                    schema["properties"]["set"]["properties"][keyword] = {
+                        "type": "string",
+                        "enum": ["ask-yes", "yes", "ask-no", "no"],
+                    }
+                elif _type == "boolean":
+                    schema["properties"]["set"]["properties"][keyword] = {
+                        "type": "string",
+                        "enum": ["yes", "no"],
+                    }
+                # number (long)
+                elif _type.split()[0] == "number":
+                    schema["properties"]["set"]["properties"][keyword] = {
+                        "type": _type
+                    }
+                # mailbox, path, command
+                else:
+                    schema["properties"]["set"]["properties"][keyword] = {
+                        "type": "string"
+                    }
+                    if _type == "regular expression":
+                        schema["properties"]["set"]["properties"][keyword][
+                            "format"
+                        ] = "regex"
+                    elif _type == "e-mail address":
+                        schema["properties"]["set"]["properties"][keyword][
+                            "format"
+                        ] = "email"
+                    elif _type == "enumeration":
+                        schema["properties"]["set"]["properties"][keyword][
+                            "enum"
+                        ] = []
+                default = lines[1].split(":")[1].strip()
+                if _type == "number":
+                    default = int(default)
+                else:
+                    default = default.strip('"')
+                schema["properties"]["set"]["properties"][keyword][
+                    "default"
+                ] = default
+                schema["properties"]["set"]["properties"][keyword][
+                    "description"
+                ] = token.content
+            else:
+                description = re.sub(r"\n\s*", " ", token.content)
+                schema["properties"]["set"]["properties"][keyword][
+                    "description"
+                ] += "\n" + description
+                if (
+                    schema["properties"]["set"]["properties"][keyword].get(
+                        "enum"
+                    )
+                    == []
+                ):
+                    enumeration = [
+                        name.strip("\\")
+                        for name in (
+                            description
+                            .split("May be ")[-1]
+                            .split(".")[0]
+                            .split('"')[1::2]
+                        )
+                    ]
+                    if enumeration:
+                        schema["properties"]["set"]["properties"][keyword][
+                            "enum"
+                        ] = enumeration
+schema["properties"]["source"] |= {
+    "type": "array",
+    "uniqueItems": True,
+    "items": {"type": "string"},
+}
+print(schema)
