@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import re
 
 from lsp_tree_sitter.misc import get_md_tokens
