@@ -38,6 +38,7 @@
 [![pypi/pyversions](https://shields.io/pypi/pyversions/mutt-language-server)](https://pypi.org/project/mutt-language-server/#files)
 
 A language server for (neo)mutt's muttrc.
+Refer [lsp-tree-sitter](https://github.com/neomutt/lsp-tree-sitter).
 
 A screencast authored by @rbmarliere:
 
