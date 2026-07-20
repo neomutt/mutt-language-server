@@ -1,0 +1,8 @@
+---
+- id: mutt-language-server-check
+  name: mutt language server check
+  description: >
+    Check (neo)muttrc
+  language: python
+  files: ^(neo)?muttrc($|\..*)
+  entry: mutt-language-server --check
