@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import json
 import re
 
 from lsp_tree_sitter.misc import get_md_tokens
@@ -159,4 +160,4 @@ schema["properties"]["source"] |= {
     "uniqueItems": True,
     "items": {"type": "string"},
 }
-print(schema)
+print(json.dumps(schema, indent=2))
