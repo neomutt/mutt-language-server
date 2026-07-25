@@ -14,5 +14,5 @@ class Test:
 
     @staticmethod
     def test_complete() -> None:
-        contents = server.lookup("option", "sleep_time")["sleep_time"]
+        contents = server.lookup("sleep_time")["sleep_time"]
         assert len(contents)
