@@ -1,6 +1,5 @@
 # mutt-language-server
 
-[![readthedocs](https://shields.io/readthedocs/mutt-language-server)](https://mutt-language-server.readthedocs.io)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/neomutt/mutt-language-server/main.svg)](https://results.pre-commit.ci/latest/github/neomutt/mutt-language-server/main)
 [![github/workflow](https://github.com/neomutt/mutt-language-server/actions/workflows/main.yml/badge.svg)](https://github.com/neomutt/mutt-language-server/actions)
 [![codecov](https://codecov.io/gh/neomutt/mutt-language-server/branch/main/graph/badge.svg)](https://codecov.io/gh/neomutt/mutt-language-server)
@@ -38,7 +37,6 @@
 [![pypi/pyversions](https://shields.io/pypi/pyversions/mutt-language-server)](https://pypi.org/project/mutt-language-server/#files)
 
 A language server for (neo)mutt's muttrc.
-Refer [lsp-tree-sitter](https://github.com/neomutt/lsp-tree-sitter).
 
 A screencast authored by @rbmarliere:
 
