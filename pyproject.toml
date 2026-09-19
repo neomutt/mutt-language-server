@@ -8,16 +8,22 @@ license = "GPL-3.0-or-later"
 authors = [{ name = "Wu, Zhenyu", email = "wuzhenyu@ustc.edu" }]
 keywords = ["json schema", "language server", "tree sitter"]
 dependencies = [
-    "lsp-tree-sitter>=0.2.14",
-    "tree-sitter-muttrc>=0.1.1",
+  "lsp-tree-sitter>=0.2.14",
+  "tree-sitter-muttrc>=0.1.1",
 ]
+
+[project.urls]
+"Bug Report" = "https://github.com/neomutt/mutt-language-server/issues"
+Download = "https://github.com/neomutt/mutt-language-server/releases"
+Homepage = "https://lsp-tree-sitter.readthedocs.io/en/latest/examples/mutt-language-server/README.html"
+Source = "https://github.com/neomutt/mutt-language-server"
 
 [project.scripts]
 mutt-language-server = "mutt_language_server.__main__:main"
 
 [project.optional-dependencies]
 dev = [
-    "pytest-cov>=7.1.0",
+  "pytest-cov>=7.1.0",
 ]
 
 [build-system]
